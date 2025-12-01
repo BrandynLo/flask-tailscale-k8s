@@ -1,0 +1,42 @@
+# Secrets & Terraform state
+.oci/
+*.pem
+config
+.terraform/
+.terraform.lock.hcl
+terraform.tfstate
+terraform.tfstate.backup
+*.tfplan
+terraform.tfvars
+
+# IDE / temp
+.idea/
+.vscode/
+*.swp
+
+# Terraform
+.terraform/
+.terraform.lock.hcl
+terraform.tfstate
+terraform.tfstate.backup
+*.tfstate
+*.tfvars  # Especially if it has OCI credentials
+
+# OS/Editor
+.DS_Store
+*.log
+# OCI CLI - NEVER commit credentials
+~/.oci/
+.oci/
+
+# Terraform state & locks
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.backup
+*.tfvars
+
+# IDE/Editor
+.vscode/
+.idea/
+*.log
