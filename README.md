@@ -7,19 +7,42 @@
 This repository deploys a lightweight Kubernetes cluster using Terraform and provisions a secure Flask web application with private Tailscale integration. 
 The setup enables private access to the Flask app's service wrapped in a docker container and pod network over Tailscale, without exposing public ports. Ideal for development, self-hosted services, or secure API endpoints.
 
-# Resources Created
-- Kubernetes cluster (configurable for minikube, kind, or cloud providers)
-- VPC/Networking infrastructure (subnets, gateways if applicable)
- -    Terraform state management with remote backend support
-   -  Tailscale DaemonSet for node-level private connectivity
-  -   Flask app Deployment, Service, and optional Ingress with Tailscale subnet routing
-  -   Optional: Tailscale exit node for full network egress
-# Production Value
- -    Automated Kubernetes & App Deployment
- -    Zero-trust private access via Tailscale
-  -   Scalable Flask app hosting
-# Prerequisites
+## What's Created (Infrastructure & Application)
 
+This project uses Terraform to provision a complete, ready-to-use environment on IBM Cloud. Here's exactly what gets deployed:
+
+### Core Infrastructure
+- **IBM Cloud Kubernetes Service (IKS) Lite Cluster**  
+  Free-tier single-zone cluster (1 vCPU + 4 GB RAM worker node)
+- **VPC & Networking**  
+  - Dedicated VPC  
+  - Public & private subnets  
+  - Public gateway & VLAN routing (required for free-tier workers)
+
+### Secure Private Networking (Zero-Trust)
+- **Tailscale DaemonSet** running on every worker node  
+  - Nodes join your private Tailscale tailnet  
+  - Advertises Kubernetes pod (`10.42.0.0/16`) and service (`172.30.0.0/16`) CIDR ranges  
+  - Optional exit-node capability for full egress routing through your tailnet
+
+### Flask Application Stack
+- **Docker image** built and pushed to IBM Container Registry (ICR)  
+- **Kubernetes resources** in the `default` namespace:
+  - `Deployment` → replicaset of your Flask app (easily scalable)
+  - `Service` (ClusterIP) → internal access on port 80
+  - NodePort exposure on `30080` (used only for initial testing or Cloudflare Tunnel)
+  - Optional Ingress (commented in manifest) ready for Tailscale subnet router or IBM Load Balancer
+
+### Result
+You get a fully functional Flask web app running in Kubernetes that is **completely private by default** — no public IP, no open ingress, no load balancer costs.  
+Access options:
+- From any device in your Tailscale tailnet → `http://<worker-node-tailscale-ip>:30080` or via Kubernetes service CIDR
+- Temporary public access → Cloudflare Tunnel (zero config, included instructions)
+- Future-proof → swap in IBM Load Balancer + Cloudflare Origin CA in < 5 minutes
+
+All of this with ~$0 monthly cost using only free-tier services (IBM Cloud Lite K8s + Tailscale free plan).
+
+# Prerequisites
 | Requirement              | Details                                                                 |
 |--------------------------|-------------------------------------------------------------------------|
 | IBM Cloud Account        | Free Lite account sufficient → https://cloud.ibm.com/registration       |
@@ -28,6 +51,14 @@ The setup enables private access to the Flask app's service wrapped in a docker 
 | Tailscale Account        | Free tier sufficient → https://tailscale.com                            |
 | Docker Account           | Free tier sufficient → https://docker.com                               |
 
+
+# !! Security Note !!
+   Currently port 80 is open, HTTP only:
+- No encryption (plain HTTP)
+- No authentication
+- Port 30080 open on the worker node
+- No rate-limiting / WAF
+If you need to use encryption for further use of kubernetes cluster I have provided solutions (Cloudflare) due to limitations of free K8 from IBM.
 
 # Installation (Ubuntu/Debian)
 
@@ -310,8 +341,13 @@ Verify connection on TailScale:
 
 You now have access to SSH into the personal cloud console of the Kubernetes Cluster you've provisioned.
 
+# Notes
 
-# Extra Note:
+HOW TO DESTROY THE SITE:
+kubectl get all --namespace=default
+kubectl delete service flask-site-svc --namespace=default --force --grace-period=0
+kubectl delete deployment flask-site service flask-site-svc ingress flask-site-ingress --ignore-not-found=true
+terraform destroy
 - Not the most organized Readme i've made. Will provide an update by recreating this in a different VM to host kubernetes on. 
 
 
