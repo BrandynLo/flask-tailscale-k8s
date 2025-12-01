@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 This repository deploys a lightweight Kubernetes cluster using Terraform and provisions a secure Flask web application with private Tailscale integration. 
-The setup enables private access to the Flask app's service and pod network over Tailscale, without exposing public ports. Ideal for development, self-hosted services, or secure API endpoints.
+The setup enables private access to the Flask app's service wrapped in a docker container and pod network over Tailscale, without exposing public ports. Ideal for development, self-hosted services, or secure API endpoints.
 
 # Resources Created
 - Kubernetes cluster (configurable for minikube, kind, or cloud providers)
