@@ -37,7 +37,7 @@ curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
 ```
 # Cloning the Repo
 ```bash
-git clone https://github.com/BrandynLo/IBM-Kubernetes_Terraform_Tailscale.git
+git clone https://github.com/BrandynLo/flask-tailscale-k8s
 cd IBM-Kubernetes_Terraform_Tailscale
 ```
 # Install Terraform
@@ -82,9 +82,7 @@ Insert the one-time code and select the region of your choice.
 
 # IBM - Syncing API Keys
 [Access your API keys through https://cloud.ibm.com/
-
 Navigate to Manage Identities > API KEYS > Create:
-<img width="268" height="366" alt="Screenshot 2025-11-28 164334" src="https://github.com/user-attachments/assets/340a9ae0-66a8-48f2-9aaf-6ce8bf09c09a" />
 
 #Edit the Variables.tf file:
 - You only need to change the variable in variable.tf 
@@ -311,5 +309,9 @@ Verify connection on TailScale:
 <img width="1308" height="912" alt="image" src="https://github.com/user-attachments/assets/8d68e81a-68ed-486d-a005-c9904ab15aa9" />
 
 You now have access to SSH into the personal cloud console of the Kubernetes Cluster you've provisioned.
+
+
+# Extra Note:
+- Not the most organized Readme i've made. Will provide an update by recreating this in a different VM to host kubernetes on. 
 
 
