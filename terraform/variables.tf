@@ -33,3 +33,5 @@ variable "kube_version" {
   type        = string
   default     = null
 }
+
+#Prompts user for credentials after running terraform.apply
