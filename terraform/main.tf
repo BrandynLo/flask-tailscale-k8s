@@ -16,7 +16,7 @@ data "ibm_resource_group" "default" {
   name = "Default"
 }
 
-resource "ibm_container_cluster" "free" {
+resource "ibm_container_cluster" "cluster" {
   name              = var.cluster_name
   datacenter        = var.datacenter
   machine_type      = "u3c.2x4"          
@@ -26,8 +26,8 @@ resource "ibm_container_cluster" "free" {
   default_pool_size = 1
   resource_group_id = data.ibm_resource_group.default.id
 
-  force_delete_storage = true
-  no_subnet            = true
+  force_delete_storage = true     #Used to delete storage after terraform.destroy
+  no_subnet            = true     #No extra subnets.
   kube_version         = var.kube_version
   wait_till            = "normal"
 }
@@ -35,15 +35,15 @@ resource "ibm_container_cluster" "free" {
 output "cluster_info" {
   value = <<-EOT
 
-  IBM Cloud Kubernetes cluster created!
+  IBM Cloud Kubernetes cluster created
 
-  Name       : ${ibm_container_cluster.free.name}
-  ID         : ${ibm_container_cluster.free.id}
+  Name       : ${ibm_container_cluster.cluster.name}
+  ID         : ${ibm_container_cluster.cluster.id}
   Datacenter : ${var.datacenter}
-  Worker     : 1 × u3c.2x4 (2 vCPU + 4 GB) – forever free
+  Worker     : 1 × u3c.2x4 (2 vCPU + 4 GB)
 
   Connect now:
-    ibmcloud ks cluster config --cluster ${ibm_container_cluster.free.id} --admin
+    ibmcloud ks cluster config --cluster ${ibm_container_cluster.cluster.id} --admin
     kubectl get nodes -o wide
 
   EOT
