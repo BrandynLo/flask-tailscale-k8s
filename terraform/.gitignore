@@ -14,14 +14,6 @@ terraform.tfvars
 .vscode/
 *.swp
 
-# Terraform
-.terraform/
-.terraform.lock.hcl
-terraform.tfstate
-terraform.tfstate.backup
-*.tfstate
-*.tfvars  # Especially if it has OCI credentials
-
 # OS/Editor
 .DS_Store
 *.log
