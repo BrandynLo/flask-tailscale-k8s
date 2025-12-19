@@ -1,48 +1,39 @@
-# Flask App Deployment on Kubernetes with Terraform & Private Tailscale Access
+##  Flask App on Kubernetes Cluster with Docker, Terraform, Tailscale, and Cloudflare 
 
 [![Terraform](https://img.shields.io/badge/Terraform-v1.5%2B-blue.svg)](https://www.terraform.io/)
 [![IBM Cloud Provider](https://img.shields.io/badge/IBM__Cloud_Provider-v1.56%2B-orange.svg)](https://registry.terraform.io/providers/IBM-Cloud/ibm/latest)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-This repository deploys a lightweight Kubernetes cluster using Terraform and provisions a secure Flask web application with private Tailscale integration. 
-The setup enables private access to the Flask app's service wrapped in a docker container and pod network over Tailscale, without exposing public ports. Ideal for development, self-hosted services, or secure API endpoints.
+Deploys a simple Flask web application to a Kubernetes cluster provisioned via Terraform on IBM Cloud. The app runs in pods scheduled on the cluster's worker nodes, with optional Tailscale integration and cloudflare integration. 
 
-## What's Created (Infrastructure & Application)
 
-This project uses Terraform to provision a complete, ready-to-use environment on IBM Cloud. Here's exactly what gets deployed:
+## Infrastructure (Provisioned via Terraform)
 
-### Core Infrastructure
-- **IBM Cloud Kubernetes Service (IKS) Lite Cluster**  
-  Free-tier single-zone cluster (1 vCPU + 4 GB RAM worker node)
-- **VPC & Networking**  
-  - Dedicated VPC  
-  - Public & private subnets  
-  - Public gateway & VLAN routing (required for free-tier workers)
+- IBM Cloud Kubernetes Service (IKS) Lite Cluster
+- Single-zone cluster
+- One worker node
+- Runs in a dedicated VPC with public and private subnets
+- Worker node connected via public VLAN
 
-### Secure Private Networking (Zero-Trust)
-- **Tailscale DaemonSet** running on every worker node  
-  - Nodes join your private Tailscale tailnet  
-  - Advertises Kubernetes pod (`10.42.0.0/16`) and service (`172.30.0.0/16`) CIDR ranges  
-  - Optional exit-node capability for full egress routing through your tailnet
 
-### Flask Application Stack
-- **Docker image** built and pushed to IBM Container Registry (ICR)  
-- **Kubernetes resources** in the `default` namespace:
-  - `Deployment` → replicaset of your Flask app (easily scalable)
-  - `Service` (ClusterIP) → internal access on port 80
-  - NodePort exposure on `30080` (used only for initial testing or Cloudflare Tunnel)
-  - Optional Ingress (commented in manifest) ready for Tailscale subnet router or IBM Load Balancer
+## Application Deployment
+- Pushes the image to IBM Container Registry (ICR).
+- Deploys it to the Kubernetes cluster using a single deploy.yaml manifest:
+- A Deployment managing scalable pods running the Flask container.
+- A ClusterIP Service for internal cluster access on port 80.
+- A NodePort (30080) exposing the service on the worker node's external IP (primarily for initial testing).
 
-### Result
-You get a fully functional Flask web app running in Kubernetes that is **completely private by default** — no public IP, no open ingress, no load balancer costs.  
-Access options:
-- From any device in your Tailscale tailnet → `http://<worker-node-tailscale-ip>:30080` or via Kubernetes service CIDR
-- Temporary public access → Cloudflare Tunnel (zero config, included instructions)
-- Future-proof → swap in IBM Load Balancer + Cloudflare Origin CA in < 5 minutes
+## Enables Secure Private Networking with Tailscale
+Provides instructions and a ready-to-apply DaemonSet YAML to run Tailscale on every cluster node:
+- Joins the nodes to your personal Tailscale tailnet using a one-time auth key.
+- Advertises the Kubernetes pod CIDR (10.42.0.0/16) and service CIDR (172.30.0.0/16).
+- Optionally configures the node as an exit node.
+- Result: The Flask app becomes accessible privately from any device connected to your Tailscale network (e.g., http://<worker-tailscale-ip>:30080 or via routed CIDRs), without exposing public ports or incurring load balancer costs.
 
-All of this with ~$0 monthly cost using only free-tier services (IBM Cloud Lite K8s + Tailscale free plan).
+## Optional Clouflare Integration
+Includes steps to use kubectl port-forward combined with Cloudflare Tunnel (cloudflared)
 
-# Prerequisites
+## Prerequisites
 | Requirement              | Details                                                                 |
 |--------------------------|-------------------------------------------------------------------------|
 | IBM Cloud Account        | Free Lite account sufficient → https://cloud.ibm.com/registration       |
@@ -51,43 +42,20 @@ All of this with ~$0 monthly cost using only free-tier services (IBM Cloud Lite 
 | Tailscale Account        | Free tier sufficient → https://tailscale.com                            |
 | Docker Account           | Free tier sufficient → https://docker.com                               |
 
+## Security Note
+This setup uses plain HTTP (no TLS encryption) and has no authentication, rate-limiting, or WAF. Port 30080 is exposed on worker nodes via NodePort. For production, add TLS (e.g., via Cloudflare or IBM Load Balancer) and auth as needed.
 
-# !! Security Note !!
-   Currently port 80 is open, HTTP only:
-- No encryption (plain HTTP)
-- No authentication
-- Port 30080 open on the worker node
-- No rate-limiting / WAF
-If you need to use encryption for further use of kubernetes cluster I have provided solutions (Cloudflare) due to limitations of free K8 from IBM.
-
-# Installation (Ubuntu/Debian)
+## Install IBM Cloud CLI
 
 ```bash
-# Install IBM Cloud CLI
 curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
 ```
-# Cloning the Repo
+## Cloning the Repo
 ```bash
 git clone https://github.com/BrandynLo/flask-tailscale-k8s
-cd IBM-Kubernetes_Terraform_Tailscale
+cd flask-tailscale-k8s
 ```
-# Install Terraform
-```bash
-sudo apt update && sudo apt install -y gnupg software-properties-common
-```
-
-# Installation (Ubuntu/Debian)
-
-```bash
-# Install IBM Cloud CLI
-curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
-```
-# Cloning the Repo
-```bash
-git clone https://github.com/BrandynLo/IBM-Kubernetes_Terraform_Tailscale.git
-cd IBM-Kubernetes_Terraform_Tailscale
-```
-# Install Terraform
+## Install Terraform
 ```bash
 sudo apt update && sudo apt install -y gnupg software-properties-common
 wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
@@ -95,32 +63,30 @@ echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://
 sudo apt update && sudo apt install terraform -y
 ```
 
-# Install the IBM Cloud Terraform provider plugin
+## Install the IBM Cloud Terraform provider plugin
 ```bash
 ibmcloud plugin install cloud-internet-services
 ibmcloud plugin install kubernetes-service
 ibmcloud target -r us-south
 terraform init -upgrade
 ```
-# IBM Account Sync:
+## IBM Account Sync:
 ```bash
 ibmcloud login --sso
 ```
 <img width="1851" height="669" alt="image" src="https://github.com/user-attachments/assets/39f3923b-9b77-4341-9ea0-535e8df19e3d" />
-Insert the one-time code and select the region of your choice.
+- Insert the one-time code and select the region of your choice.
 <img width="1174" height="669" alt="image" src="https://github.com/user-attachments/assets/c3bcac06-f13f-4815-960c-e3ed9d9aa083" />
-
-
-# IBM - Syncing API Keys
+## IBM - Syncing API Keys
 [Access your API keys through https://cloud.ibm.com/
 Navigate to Manage Identities > API KEYS > Create:
 
-#Edit the Variables.tf file:
+## Edit the Variables.tf file:
 - You only need to change the variable in variable.tf 
-- -> Change it to your current public vlan by typing in your current zone (dal10 is mine):
+- Change it to your current public vlan by typing in your current zone (dal10 is mine):
 
         ibmcloud ks vlans --zone dal10 
-This is what you need to change: 
+- This is what you need to change: 
 <img width="1308" height="732" alt="image" src="https://github.com/user-attachments/assets/8b04d180-49b9-4bdd-ac2b-21ac713a5f98" />
 
 Example:
@@ -129,21 +95,21 @@ ID        Name              **Number**   Type      Router
 1234567   vlan-pub-dal10    **2245**     public    xyzxyz.dal10  
 2345678   vlan-priv-dal10   **2245**     private   xyzxyz.dal10
 
-USE THE NUMBER TYPE: Example here is 2245 and replace it in your variables.tf
-IF YOU ARE IN A DIFFERENT ZONE, Change your variables.tf default zone as well.
-
-# Final Step: Cluster Creation with Terraform
+- USE THE NUMBER TYPE: Example here is 2245 and replace it in your variables.tf
+- IF YOU ARE IN A DIFFERENT ZONE.
+- Change your variables.tf default zone as well.
+## Final Step: Cluster Creation with Terraform
 ```bash
 cd terraform
 terraform init
 terraform plan
 terraform apply
 ```
-# Verify Cluster Creation:
+## Verify Cluster Creation:
 <img width="1642" height="309" alt="Screenshot 2025-11-30 195613" src="https://github.com/user-attachments/assets/c5f1d2fd-7304-4037-a47a-82bd6baeba88" />
 <img width="1919" height="1025" alt="image" src="https://github.com/user-attachments/assets/3e2ff5e3-4d43-4847-8a0f-2d1e52881f38" />
 
-#Install pre-req files:
+## Install pre-req files:
 
     ibmcloud plugin install container-registry -r "IBM Cloud"
     sudo apt install docker.io -y
@@ -152,23 +118,18 @@ terraform apply
     sudo usermod -aG docker $USER
     docker --version
     kubectl get nodes
-   
-
-
-#Cluster creation-- Choose your personal cluster name
+    
+## Cluster creation-- Choose your personal cluster name
         
         ibmcloud ks cluster config --cluster <your-cluster-id-or-name> --admin
-
         #Example ibmcloud ks cluster config --cluster MY-FREE-CLUSTER --admin
-
-  # Build and Push your Docker Image
-  -Make you rememebr your "NAME SPACE" name you put on docker. Do not copy paste blindly. 
+## Build and Push your Docker Image
+- Change  "Your-NAMESPACE" name you put on docker.
    
-    cd flask-web-config
-    docker build -t us.icr.io/your-namespace/flask-site:latest ./flask-app/
-    docker push us.icr.io/your-namespace/flask-site:latest
-
-#Example Of Mine, since Docker was not working correctly:
+        cd flask-web-config
+        docker build -t us.icr.io/your-namespace/flask-site:latest ./flask-app/
+        docker push us.icr.io/your-namespace/flask-site:latest
+## Example Of Mine, since Docker was not working correctly:
       
     sudo docker build -t us.icr.io/brandynlabs/flask-site:latest .
     sudo mkdir -p /root/.docker
@@ -179,66 +140,55 @@ terraform apply
  <img width="891" height="861" alt="Screenshot 2025-11-30 203605" src="https://github.com/user-attachments/assets/3c5c8405-7c47-4375-8e6c-2580f45147fa" />
 <img width="822" height="215" alt="Screenshot 2025-11-30 203907" src="https://github.com/user-attachments/assets/1553e2b9-d642-4a17-9ce2-dc163d111de4" />
 
- # Deploy the app
+ ## Deploy the app
 
     cd Kubernetes
     kubectl apply -f deploy.yaml
 Ignore error:
 <img width="1746" height="98" alt="Screenshot 2025-11-30 204324" src="https://github.com/user-attachments/assets/87baf225-2d62-42b6-91c8-b04cf061efdf" />
 
-# 5. Get the public URL
+## 5. Get the public URL
 
     kubectl get nodes -o wide
     kubectl get svc flash-site-svc
 <img width="1363" height="669" alt="image" src="https://github.com/user-attachments/assets/3cdedeb3-3341-45e7-ac73-a59ad93e7ac2" />
 <img width="1919" height="1035" alt="image" src="https://github.com/user-attachments/assets/ea05e98f-1aa2-4d63-9ae9-efe598e096a4" />
-
-# Short-hand commands: 
-Run Diag:
+## Short-hand commands: 
+- Run Diag:
       
       watch kubectl get pods
-
-Run this command to watch realtime when the Website goes live.
+- Run this command to watch realtime when the Website goes live.
   
-    watch kubectl get svc flask-site-svc
-
+      watch kubectl get svc flask-site-svc
 If you edit the deploy.yaml:
     
     kubectl apply -f your-manifest.yaml
-
-
 Edit the app.y in flask-web-config directory to edit the website. 
     
     sudo docker build -t us.icr.io/brandynlabs/flask-site:latest .
     sudo docker push us.icr.io/brandynlabs/flask-site:latest
-  
-
-
     kubectl apply -f deploy.yaml
     kubectl get svc flask-site-svc  # Shows 80:30080/TCP
     kubectl get nodes -o wide       # Confirm worker EXTERNAL-IP
 
-# CLOUDFLARE INSTALLATION:
+## Cloudflare Setup:
     wget -q https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
     sudo dpkg -i cloudflared-linux-amd64.deb
 <img width="938" height="349" alt="Screenshot 2025-11-30 210150" src="https://github.com/user-attachments/assets/40e9ec48-5615-4c15-a4ba-2dba0b67730b" />
-
-You may run this on a paid domain through CLOUDFLARE or edit the yaml file if you have paid loadbalancing features through IBM K8s. 
+- You may run this on a paid domain through Cloudflare or edit the yaml file to loadbalance through IBM. 
 
 If you need to run CLOUDFLARE temporarily, you can: 
-
-On a different terminal, run:
-    
-    kubectl port-forward svc/flask-site-svc 8080:80
+- On a different terminal, run:
+  
+      kubectl port-forward svc/flask-site-svc 8080:80
   <img width="736" height="67" alt="Screenshot 2025-11-30 210655" src="https://github.com/user-attachments/assets/c8cdce9d-5209-4f26-916d-ce1f743f85ff" />
 
-On a seperate terminal, run:
+- On a seperate terminal, run:
       
       cloudflared tunnel --url http://localhost:8080
 <img width="950" height="397" alt="Screenshot 2025-11-30 210709" src="https://github.com/user-attachments/assets/4bcca38f-0f06-4241-ae97-deb67f34b850" />
-This will generate a temp cloudflare domain name. 
+- This will generate a temp cloudflare domain name. 
 <img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/8b60e78e-bf4b-4c1e-b0d4-1ab12fac7287" />
-
 6. Cleanup
    
         cd terraform
@@ -254,20 +204,22 @@ ibmcloud ks cluster config --cluster my-free-lite-cluster --admin
 kubectl create namespace tailscale
 ```
 <img width="1414" height="535" alt="Screenshot 2025-11-28 174951" src="https://github.com/user-attachments/assets/900317a5-5b23-49f5-8afd-4e1790f175af" />
-
-Log into https://login.tailscale.com/admin/machines
+- Log into https://login.tailscale.com/admin/machines
 <img width="1414" height="535" alt="Screenshot 2025-11-28 174951" src="https://github.com/user-attachments/assets/c323235f-589a-4fe7-9bc2-131cb2ba56eb" />
-
 Generate an Auth key and replace it with:
 <img width="1308" height="912" alt="image" src="https://github.com/user-attachments/assets/6d91a622-2bef-4c00-a957-f5f73805cc89" />
+
 ```bash
 sudo tailscale up --auth-key=YOUR_Key_Goes_Here
 ```
-example would be tskey-auth-k999999
+
+- example would be tskey-auth-k999999
+
 ```bash
 kubectl create secret generic tailscale-auth --namespace tailscale \ --from-literal=TS_AUTHKEY=Key_Goes_Here
 ```
-Copy this to setup tailscale:
+- Copy this to setup tailscale:
+
 ```bash
 cat <<EOF | kubectl apply -f -
 apiVersion: apps/v1
@@ -323,14 +275,12 @@ EOF
 
 ```
 <img width="945" height="950" alt="Screenshot 2025-11-28 175527" src="https://github.com/user-attachments/assets/2b4d9ef5-a9cc-4bfb-9ca6-2f1471ded9ea" />
-
 Run this to verify pod is connected:
 ```bash
 kubectl -n tailscale get pods
 ```
 <img width="621" height="73" alt="Screenshot 2025-11-28 181224" src="https://github.com/user-attachments/assets/11e44b6b-ad0c-4086-b4f9-6c1a8ce8f588" />
-
-Verify connection of Cluster to TailScale
+- Verify connection of Cluster to TailScale
 ```bash
 kubectl -n tailscale logs -f NAME_OF_YOUR_TAILSCALE
 ```
@@ -338,16 +288,14 @@ kubectl -n tailscale logs -f NAME_OF_YOUR_TAILSCALE
 
 Verify connection on TailScale:
 <img width="1308" height="912" alt="image" src="https://github.com/user-attachments/assets/8d68e81a-68ed-486d-a005-c9904ab15aa9" />
+- You now have access to SSH into the personal cloud console of the Kubernetes Cluster you've provisioned.
 
-You now have access to SSH into the personal cloud console of the Kubernetes Cluster you've provisioned.
-
-# Notes
-
-HOW TO DESTROY THE SITE:
+## Notes
+- Destroy Site:
+```bash
 kubectl get all --namespace=default
 kubectl delete service flask-site-svc --namespace=default --force --grace-period=0
 kubectl delete deployment flask-site service flask-site-svc ingress flask-site-ingress --ignore-not-found=true
 terraform destroy
-- Not the most organized Readme i've made. Will provide an update by recreating this in a different VM to host kubernetes on. 
-
+```
 
