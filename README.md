@@ -4,8 +4,8 @@
 [![IBM Cloud Provider](https://img.shields.io/badge/IBM__Cloud_Provider-v1.56%2B-orange.svg)](https://registry.terraform.io/providers/IBM-Cloud/ibm/latest)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Deploys a simple Flask web application to a Kubernetes cluster provisioned via Terraform on IBM Cloud. The app runs in pods scheduled on the cluster's worker nodes, with optional Tailscale integration and cloudflare integration. 
-
+Deploys a Flask web application to a Kubernetes cluster provisioned via Terraform on IBM Cloud. The app was containerized with docker, and runs in pods scheduled on the cluster's worker nodes. I've provided support for optional Tailscale integration and Cloudflare integration further down in the documentation as well.
+- Project was inspired after working with Oracle VMs using Terraform-- I felt compelled to learn more about Kubernetes Clusters, worker nodes, pods, and how dockerization works after the previous project. This is running off of the free version of IBM's free Kubernetes Cluster as a note.
 
 ## Infrastructure (Provisioned via Terraform)
 
