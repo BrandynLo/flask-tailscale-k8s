@@ -22,7 +22,7 @@ spec:
             cpu: "200m"
             memory: "256Mi"
 
-#Creates a Deployment that runs 3 identical copies of the Flask pod for load balancing/reliabilty.
+#Creates a Deployment that creates 3 pods running identical copies of the Flask for load balancing/reliabilty.
 #Determines container specifics and pod naming labels.
 
 
