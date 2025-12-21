@@ -22,7 +22,7 @@ Deploys a Flask web application to a Kubernetes cluster provisioned using Terraf
 - A ClusterIP Service for internal cluster access on port 80.
 - A NodePort (30080) exposing the service on the worker node's external IP (primarily for initial testing).
 
-## Enables Secure Private Networking with Tailscale
+## Optional Tailscale Integration for remote management
 Provides instructions and a ready-to-apply DaemonSet YAML to run Tailscale on every cluster node:
 - Joins the nodes to your personal Tailscale tailnet using a one-time auth key.
 - Advertises the Kubernetes pod CIDR (10.42.0.0/16) and service CIDR (172.30.0.0/16).
@@ -30,16 +30,16 @@ Provides instructions and a ready-to-apply DaemonSet YAML to run Tailscale on ev
 - Result: The Flask app becomes accessible privately from any device connected to your Tailscale network (e.g., http://<worker-tailscale-ip>:30080 or via routed CIDRs), without exposing public ports or incurring load balancer costs.
 
 ## Optional Clouflare Integration
-Includes steps to use kubectl port-forward combined with Cloudflare Tunnel (cloudflared)
+Includes steps to use kubectl port-forward combined with Cloudflare Tunnel (
 
 ## Prerequisites
 | Requirement              | Details                                                                 |
 |--------------------------|-------------------------------------------------------------------------|
-| IBM Cloud Account        | Free Lite account sufficient → https://cloud.ibm.com/registration       |
-| Terraform                | Installation Below -- v1.5 or higher                                    |
-| IBM Cloud CLI            | Installation Below -- Latest version                                    |
-| Tailscale Account        | Free tier sufficient → https://tailscale.com                            |
-| Docker Account           | Free tier sufficient → https://docker.com                               |
+| IBM Cloud Account        | Free account sufficient → https://cloud.ibm.com/registration       |
+| Terraform                | Installation on linux Below -- v1.5 or higher                                    |
+| IBM Cloud CLI            | Installation on linux Below -- Latest version                                    |
+| Tailscale Account        | Free account sufficient → https://tailscale.com                            |
+| Docker Account           | Free account sufficient → https://docker.com                               |
 
 ## Security Note
 This setup uses plain HTTP (no TLS encryption) and has no authentication, rate-limiting, or WAF. Port 30080 is exposed on worker nodes via NodePort. For production, add TLS (e.g., via Cloudflare or IBM Load Balancer) and auth as needed.
