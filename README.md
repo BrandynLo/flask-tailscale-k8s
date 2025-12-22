@@ -123,7 +123,14 @@ terraform apply
  ```bash       
         ibmcloud ks cluster config --cluster <My-Kuberernetes> --admin
 ```
+## Make sure you're logged in to IBM Cloud
+- ibmcloud login
+  - use your IBM ID, or --sso if needed, or an API key with ibmcloud login --apikey YOUR_API_KEY
+- ibmcloud cr login
+
+- Name of cluster is Pulled from here in var.tf:
 <img width="1593" height="280" alt="image" src="https://github.com/user-attachments/assets/6ffba6f8-cd2a-4f13-a11c-4e48443b8c89" />
+<img width="700" height="290" alt="image" src="https://github.com/user-attachments/assets/9ea4dea7-85c5-4947-af97-d2b2081ecb21" />
 
 Example: ibmcloud ks cluster config --cluster NameYourClusterHere --admin
 
