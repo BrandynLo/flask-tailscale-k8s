@@ -119,10 +119,12 @@ terraform apply
     docker --version
     kubectl get nodes
 ```
-## Cluster creation-- Choose your personal cluster name
+## Authentication-- Input your cluster name
  ```bash       
-        ibmcloud ks cluster config --cluster <your-cluster-id-or-name> --admin
+        ibmcloud ks cluster config --cluster <My-Kuberernetes> --admin
 ```
+<img width="1593" height="280" alt="image" src="https://github.com/user-attachments/assets/6ffba6f8-cd2a-4f13-a11c-4e48443b8c89" />
+
 Example: ibmcloud ks cluster config --cluster NameYourClusterHere --admin
 
 ## Build and Push your Docker Image
