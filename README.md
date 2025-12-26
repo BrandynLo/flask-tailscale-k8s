@@ -135,26 +135,23 @@ terraform apply
 <img width="1593" height="280" alt="image" src="https://github.com/user-attachments/assets/6ffba6f8-cd2a-4f13-a11c-4e48443b8c89" />
 <img width="700" height="290" alt="image" src="https://github.com/user-attachments/assets/9ea4dea7-85c5-4947-af97-d2b2081ecb21" />
 
+
 Example: ibmcloud ks cluster config --cluster NameYourClusterHere --admin
 
 ## Build and Push your Docker Image
-- Change  <Your-Namespace> to your namespace.
+- Change  <Your-Namespace> to your name
+- For your Namespace name it is: ibmcloud cr namespace-list
 ```bash
-        cd flask-web-config
-        docker build -t us.icr.io/your-namespace/flask-site:latest ./flask-app/
-        docker push us.icr.io/your-namespace/flask-site:latest
+ibmcloud cr namespace-list
+```
+Now Change directories to flask-web-app, and push the flask app image:
+```bash
+docker build -t us.icr.io/your-namespace/flask-site:latest ./flask-app/
+docker push us.icr.io/your-namespace/flask-site:latest
 ```
 - docker build cmd  → pushes the Image to be built/containzeried on our machine
 - docker push cmd → pushes the Image to be uploaded to IBM Container Registry
-## Example Of Mine, since Docker was not working correctly:
-```bash 
-    sudo docker build -t us.icr.io/brandynlabs/flask-site:latest .
-    sudo mkdir -p /root/.docker
-    sudo cp ~/.docker/config.json /root/.docker/
-    sudo docker push us.icr.io/brandynlabs/flask-site:latest
-    ibmcloud cr login
-    ibmcloud cr namespace-add brandynlabs     
-```
+
 <img width="891" height="861" alt="Screenshot 2025-11-30 203605" src="https://github.com/user-attachments/assets/3c5c8405-7c47-4375-8e6c-2580f45147fa" />
 <img width="822" height="215" alt="Screenshot 2025-11-30 203907" src="https://github.com/user-attachments/assets/1553e2b9-d642-4a17-9ce2-dc163d111de4" />
 
@@ -188,10 +185,12 @@ Ignore error:
       watch kubectl get svc flask-site-svc
   ```
 If you edit the deploy.yaml:
-    ```bash
+```bash
     kubectl apply -f your-manifest.yaml
-    ```
+```
+
 Edit the app.y in flask-web-config directory to edit the website. 
+
 ```bash
     sudo docker build -t us.icr.io/brandynlabs/flask-site:latest .
     sudo docker push us.icr.io/brandynlabs/flask-site:latest
@@ -206,8 +205,8 @@ Edit the app.y in flask-web-config directory to edit the website.
     sudo dpkg -i cloudflared-linux-amd64.deb
 ```
 <img width="938" height="349" alt="Screenshot 2025-11-30 210150" src="https://github.com/user-attachments/assets/40e9ec48-5615-4c15-a4ba-2dba0b67730b" />
-- You may run this on a paid domain through Cloudflare or edit the yaml file to loadbalance through IBM. 
 
+- You may run this on a paid domain through Cloudflare or edit the yaml file to loadbalance through IBM. 
 If you need to run CLOUDFLARE temporarily, you can: 
 - On a different terminal, run:
   ```bash
@@ -219,8 +218,10 @@ If you need to run CLOUDFLARE temporarily, you can:
       cloudflared tunnel --url http://localhost:8080
   ```
 <img width="950" height="397" alt="Screenshot 2025-11-30 210709" src="https://github.com/user-attachments/assets/4bcca38f-0f06-4241-ae97-deb67f34b850" />
+
 - This will generate a temp cloudflare domain name. 
 <img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/8b60e78e-bf4b-4c1e-b0d4-1ab12fac7287" />
+
 6. Cleanup
    
         cd terraform
