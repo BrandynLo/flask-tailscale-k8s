@@ -198,6 +198,11 @@ Edit the app.y in flask-web-config directory to edit the website.
     kubectl get svc flask-site-svc  # Shows 80:30080/TCP
     kubectl get nodes -o wide       # Confirm worker EXTERNAL-IP
 ```
+## Pods are loadbalancing:
+<img width="556" height="264" alt="image" src="https://github.com/user-attachments/assets/a291c7da-525e-4cc0-8cf9-55c6460f38b2" />
+<img width="588" height="290" alt="image" src="https://github.com/user-attachments/assets/1ea96802-078f-4190-adfb-3b8f2776ef7b" />
+
+
 ## Cloudflare Setup:
 
 ```bash
