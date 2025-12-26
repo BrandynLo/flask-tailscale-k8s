@@ -171,7 +171,7 @@ Ignore error:
 ## 5. Get the public URL
 ```bash
     kubectl get nodes -o wide
-    kubectl get svc flash-site-svc
+    kubectl get svc flask-site-svc
 ```
 <img width="907" height="99" alt="image" src="https://github.com/user-attachments/assets/097ba4c4-7893-476c-90cc-63de31027dc5" />
 <img width="1919" height="1035" alt="image" src="https://github.com/user-attachments/assets/ea05e98f-1aa2-4d63-9ae9-efe598e096a4" />
