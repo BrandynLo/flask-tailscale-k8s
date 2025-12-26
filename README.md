@@ -129,6 +129,7 @@ terraform apply
 - ibmcloud cr login
 - Example output:
 <img width="1174" height="669" alt="image" src="https://github.com/user-attachments/assets/d206439f-5a47-4d7c-86eb-b5649c944a4b" />
+<img width="896" height="143" alt="image" src="https://github.com/user-attachments/assets/b494d511-d9a6-4b29-928d-9e11fb1971a3" />
 
 - Name of cluster is Pulled from here in var.tf:
 <img width="1593" height="280" alt="image" src="https://github.com/user-attachments/assets/6ffba6f8-cd2a-4f13-a11c-4e48443b8c89" />
