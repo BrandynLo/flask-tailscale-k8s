@@ -3,6 +3,7 @@
 [![IBM Cloud Provider](https://img.shields.io/badge/IBM__Cloud_Provider-v1.56%2B-orange.svg)](https://registry.terraform.io/providers/IBM-Cloud/ibm/latest)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+
 Deploys a Flask web application to a Kubernetes cluster provisioned using Terraform (via IBM Cloud). The app was containerized with docker, and runs in pods scheduled on the cluster's worker nodes. I've provided support for optional Tailscale integration and Cloudflare integration further down in the documentation as well.
 - Project was inspired after working with Oracle VMs using Terraform-- I felt compelled to learn more about Kubernetes Clusters, worker nodes, pods, and how dockerization works after the previous project. This is running off of the free version of IBM's free Kubernetes Cluster as a note.
 
@@ -106,8 +107,8 @@ terraform plan
 terraform apply
 ```
 ## Verify Cluster Creation:
-<img width="1642" height="309" alt="Screenshot 2025-11-30 195613" src="https://github.com/user-attachments/assets/c5f1d2fd-7304-4037-a47a-82bd6baeba88" />
-<img width="1919" height="1025" alt="image" src="https://github.com/user-attachments/assets/3e2ff5e3-4d43-4847-8a0f-2d1e52881f38" />
+<img width="1899" height="487" alt="image" src="https://github.com/user-attachments/assets/519c2a41-809d-4840-ba89-ec2a6487dd5f" />
+<img width="1562" height="794" alt="image" src="https://github.com/user-attachments/assets/01f52865-4c82-43fb-b900-f65537170b5e" />
 
 ## Install pre-req files:
 ```bash
@@ -128,12 +129,12 @@ terraform apply
   - use your IBM ID, or --sso if needed, or an API key with ibmcloud login --apikey YOUR_API_KEY
 - ibmcloud cr login
 - Example output:
-<img width="1174" height="669" alt="image" src="https://github.com/user-attachments/assets/d206439f-5a47-4d7c-86eb-b5649c944a4b" />
-<img width="896" height="143" alt="image" src="https://github.com/user-attachments/assets/b494d511-d9a6-4b29-928d-9e11fb1971a3" />
+<img width="825" height="366" alt="image" src="https://github.com/user-attachments/assets/f35686a7-3b13-4f06-9119-5655f9be55e7" />
+<img width="902" height="167" alt="image" src="https://github.com/user-attachments/assets/05edee05-bf55-4840-8484-34ab57cad5ba" />
 
-- Name of cluster is Pulled from here in var.tf:
-<img width="1593" height="280" alt="image" src="https://github.com/user-attachments/assets/6ffba6f8-cd2a-4f13-a11c-4e48443b8c89" />
+- The Name of the cluster is Pulled from here in var.tf:
 <img width="700" height="290" alt="image" src="https://github.com/user-attachments/assets/9ea4dea7-85c5-4947-af97-d2b2081ecb21" />
+<img width="1593" height="280" alt="image" src="https://github.com/user-attachments/assets/6ffba6f8-cd2a-4f13-a11c-4e48443b8c89" />
 
 
 Example: ibmcloud ks cluster config --cluster NameYourClusterHere --admin
@@ -208,6 +209,18 @@ Edit the app.y in flask-web-config directory to edit the website.
 
 ```bash
 kubectl rollout restart deployment/flask-site
+```
+
+## Shutting down pods:
+**Terminates pods to shutdown**
+```bash
+kubectl scale deployment flask-site --replicas=0
+```
+<img width="907" height="252" alt="image" src="https://github.com/user-attachments/assets/14367335-9a2a-4038-9d05-4d6c5e29c630" />
+
+**Turn pods back online**
+```bash
+kubectl scale deployment flask-site --replicas=2
 ```
 
 ## Cloudflare Setup:
