@@ -176,7 +176,9 @@ Ignore error:
 <img width="907" height="99" alt="image" src="https://github.com/user-attachments/assets/097ba4c4-7893-476c-90cc-63de31027dc5" />
 <img width="1919" height="1035" alt="image" src="https://github.com/user-attachments/assets/ea05e98f-1aa2-4d63-9ae9-efe598e096a4" />
 
-- Short-hand commands: 
+- I opened up the port 30080, because only on paid versions of IBM, is direct ip open --> So you'd type in something like: 169.xx.xxx.108:30080 as seen in the screenshot to reach your website. 
+
+**Short-hand commands**
 ```bash
       watch kubectl get pods
 ```
