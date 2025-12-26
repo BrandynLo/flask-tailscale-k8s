@@ -177,6 +177,7 @@ Ignore error:
 <img width="1919" height="1035" alt="image" src="https://github.com/user-attachments/assets/ea05e98f-1aa2-4d63-9ae9-efe598e096a4" />
 
 - I opened up the port 30080, because only on paid versions of IBM, is direct ip open --> So you'd type in something like: 169.xx.xxx.108:30080 as seen in the screenshot to reach your website. 
+<img width="906" height="566" alt="image" src="https://github.com/user-attachments/assets/31a98d87-c0c9-41d7-9dbe-10fdb3733f61" />
 
 **Short-hand commands**
 ```bash
