@@ -202,6 +202,13 @@ Edit the app.y in flask-web-config directory to edit the website.
 <img width="556" height="264" alt="image" src="https://github.com/user-attachments/assets/a291c7da-525e-4cc0-8cf9-55c6460f38b2" />
 <img width="588" height="290" alt="image" src="https://github.com/user-attachments/assets/1ea96802-078f-4190-adfb-3b8f2776ef7b" />
 
+- To update the app, rebuild and push the new Docker image, then restart deployment
+- Kubernetes will perform a zero-downtime update by starting new pods with the latest image while the old ones continue serving traffic until they're replaced (automatically)
+<img width="911" height="293" alt="image" src="https://github.com/user-attachments/assets/bfe52a23-d410-4167-81a4-f7743738c511" />
+
+```bash
+kubectl rollout restart deployment/flask-site
+```
 
 ## Cloudflare Setup:
 
